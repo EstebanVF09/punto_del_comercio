@@ -99,6 +99,50 @@
         }
         button.parent().parent().find('input').val(newVal);
     });
-    
 })(jQuery);
+
+function autoExpand() {
+    this.style.height = 'auto'; // Resetea la altura para calcular el nuevo tamaño
+    this.style.height = this.scrollHeight + 'px'; // Ajusta la altura al contenido
+}
+
+async function chatAI() {
+      
+    const baseURL = "https://api.aimlapi.com/v1";
+    const apiKey = "b04475e02f4b4af7b9334a63d4c6437d";
+    const systemPrompt = "You are a travel agent. Be descriptive and helpful";
+    const userPrompt = "Tell me about San Francisco";
+    const responseTextarea = document.getElementById('message-text');
+    const prompt = document.getElementById('question').value;
+    try {
+        const response = await fetch('https://api.aimlapi.com/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${apiKey}`,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                model: 'gpt-4o', // O el modelo que prefieras
+                messages: [{ role: 'user', content: prompt }],
+            }),
+        });
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+
+        const data = await response.json();
+        
+        console.log(data);
+
+        const message = data.choices[0].message.content;
+        responseTextarea.value = message;   
+        autoExpand.call(responseTextarea);  
+            
+    } catch (error) {
+        console.error('Error al llamar a la API:', error);
+        
+    }
+}
+
 
